@@ -1,62 +1,55 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة لغز المحاسبة المالية 🎮 | Accounting Puzzle Game</title>
+    <title>Accounting Puzzle Game 🎮</title>
     <style>
         :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --error: #ef4444;
             --bg-color: #0f172a;
             --card-bg: #1e293b;
-            --accent-green: #10b981;
-            --accent-blue: #3b82f6;
-            --accent-amber: #f59e0b;
-            --accent-purple: #8b5cf6;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-            --error-color: #ef4444;
-        }
-
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: all 0.25s ease;
+            --accent: #f59e0b;
         }
 
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-main);
+            color: #f8fafc;
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            box-sizing: border-box;
+            user-select: none;
         }
 
-        .game-container {
-            width: 100%;
-            max-width: 950px;
+        .game-card {
             background: var(--card-bg);
+            width: 100%;
+            max-width: 900px;
             border-radius: 20px;
-            border: 2px solid var(--border-color);
-            padding: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            padding: 25px;
+            border: 2px solid #334155;
             position: relative;
         }
 
-        /* Header Bar */
-        .top-bar {
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 20px;
-            margin-bottom: 25px;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        .game-title {
+        .title {
             font-size: 24px;
             font-weight: 800;
             color: #60a5fa;
@@ -65,261 +58,108 @@
             gap: 10px;
         }
 
-        .stats-group {
-            display: flex;
-            gap: 15px;
-        }
-
         .stat-badge {
-            background: #0f172a;
-            border: 1px solid var(--border-color);
+            background: #334155;
             padding: 8px 16px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 15px;
-            color: var(--accent-amber);
-        }
-
-        /* Level Indicators */
-        .level-nav {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            background: #0f172a;
-            padding: 8px;
-            border-radius: 12px;
-            justify-content: space-between;
-        }
-
-        .level-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
+            border-radius: 20px;
             font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            text-align: center;
+            font-size: 15px;
+            color: var(--accent);
         }
 
-        .level-btn.active {
-            background: var(--accent-blue);
-            color: white;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .level-btn.completed {
-            color: var(--accent-green);
-        }
-
-        /* Content Sections */
-        .level-section {
+        .level-container {
             display: none;
-            animation: fadeIn 0.4s ease-in-out;
         }
 
-        .level-section.active {
+        .level-container.active {
             display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .instructions {
             background: #0f172a;
-            border-right: 4px solid var(--accent-blue);
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            line-height: 1.6;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             font-size: 15px;
+            line-height: 1.6;
         }
 
-        /* Level 1: Drag & Drop Flow */
-        .flow-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin: 30px 0;
-            flex-wrap: wrap;
+        .drag-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .draggable-item {
+            background: #0f172a;
+            border: 2px dashed #475569;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+
+        .draggable-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
         }
 
         .drop-zone {
-            flex: 1;
-            min-width: 180px;
-            min-height: 110px;
-            border: 2px dashed var(--border-color);
-            border-radius: 14px;
-            background: rgba(15, 23, 42, 0.6);
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 15px;
+            min-height: 80px;
+            margin-bottom: 12px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 10px;
-            text-align: center;
-            position: relative;
+            justify-content: space-between;
         }
 
         .drop-zone.correct {
-            border-color: var(--accent-green);
+            border-color: var(--success);
             background: rgba(16, 185, 129, 0.1);
-        }
-
-        .flow-arrow {
-            font-size: 22px;
-            color: var(--text-muted);
-        }
-
-        .cards-pool {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 25px;
-            padding: 15px;
-            background: #0f172a;
-            border-radius: 12px;
-        }
-
-        .draggable-card {
-            background: #334155;
-            padding: 12px 20px;
-            border-radius: 10px;
-            cursor: grab;
-            font-weight: bold;
-            user-select: none;
-            border: 1px solid #475569;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
-
-        .draggable-card:active {
-            cursor: grabbing;
-        }
-
-        /* Level 2: Formula Building */
-        .formula-builder {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin: 25px 0;
-        }
-
-        .formula-row {
-            background: #0f172a;
-            padding: 20px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-        }
-
-        .formula-slots {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-
-        .slot {
-            min-width: 140px;
-            height: 45px;
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 13px;
-            font-weight: bold;
-            background: rgba(30, 41, 59, 0.5);
-        }
-
-        .slot.correct {
-            border-color: var(--accent-green);
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--accent-green);
-        }
-
-        /* Level 3: Calculation inputs */
-        .calc-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .calc-card {
-            background: #0f172a;
-            padding: 20px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-        }
-
-        .calc-card h4 {
-            margin-top: 0;
-            color: var(--accent-blue);
         }
 
         .input-group {
             display: flex;
-            gap: 10px;
+            gap: 15px;
+            align-items: center;
             margin-top: 15px;
+            flex-wrap: wrap;
         }
 
         input[type="number"] {
-            background: #1e293b;
-            border: 2px solid var(--border-color);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
+            background: #0f172a;
+            border: 2px solid #475569;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 10px;
             font-size: 16px;
-            width: 100%;
-            outline: none;
             font-weight: bold;
+            width: 180px;
+            outline: none;
         }
 
         input[type="number"]:focus {
-            border-color: var(--accent-blue);
+            border-color: var(--primary);
         }
 
-        /* Level 4: Model Table */
-        .model-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            background: #0f172a;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .model-table th, .model-table td {
-            padding: 12px 15px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .model-table th {
-            background: #1e293b;
-            color: var(--accent-blue);
-        }
-
-        /* Action Buttons */
         .btn-action {
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 12px 28px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 700;
             border-radius: 10px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            transition: all 0.2s;
+            margin-top: 15px;
         }
 
         .btn-action:hover {
@@ -327,28 +167,56 @@
             filter: brightness(1.1);
         }
 
+        .btn-back {
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
         .feedback-box {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            font-weight: bold;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
             display: none;
         }
 
         .feedback-box.correct {
             background: rgba(16, 185, 129, 0.2);
             color: #a7f3d0;
-            border: 1px solid var(--accent-green);
+            border: 1px solid var(--success);
         }
 
         .feedback-box.incorrect {
             background: rgba(239, 68, 68, 0.2);
             color: #fca5a5;
-            border: 1px solid var(--error-color);
+            border: 1px solid var(--error);
         }
 
-        /* Overlay */
-        .victory-overlay {
+        .model-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .model-table th, .model-table td {
+            border: 1px solid #334155;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .model-table th {
+            background: #0f172a;
+            color: #93c5fd;
+        }
+
+        .overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(15, 23, 42, 0.95);
@@ -357,207 +225,131 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
-            padding: 30px;
             z-index: 100;
-        }
-
-        .operator {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--accent-amber);
+            padding: 30px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-<div class="game-container">
-    <!-- Header -->
-    <div class="top-bar">
-        <div class="game-title">🎮 لغز المحاسبة المالية</div>
-        <div class="stats-group">
-            <div class="stat-badge" id="scoreDisplay">النقاط: 0 / 100</div>
-        </div>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <div class="level-nav">
-        <button class="level-btn active" id="tab-1" onclick="switchLevel(1)">1. مسار المخزون</button>
-        <button class="level-btn" id="tab-2" onclick="switchLevel(2)">2. المعادلات السحرية</button>
-        <button class="level-btn" id="tab-3" onclick="switchLevel(3)">3. التحدي الرقمي</button>
-        <button class="level-btn" id="tab-4" onclick="switchLevel(4)">4. النموذج المالي</button>
+<div class="game-card">
+    <div class="header">
+        <div class="title">🧩 Accounting Puzzle Game</div>
+        <div class="stat-badge" id="scoreDisplay">Score: 0 / 100</div>
     </div>
 
     <!-- LEVEL 1: Inventory Flow -->
-    <div class="level-section active" id="level-1">
+    <div class="level-container active" id="level1">
         <div class="instructions">
-            🧩 <b>المستوى الأول: مسار المخزون (Inventory Flow)</b><br>
-            قم بسحب البطاقات من الأسفل وإسقاطها بالترتيب الصحيح لتمثيل خريطة تحول "المواد الخام" إلى "تكلفة البضاعة المباعة (COGS)".
+            📌 <b>Level 1: Inventory Flow Puzzle</b><br>
+            Order the stages of cost flow from Raw Materials to final Cost of Goods Sold.
         </div>
-
-        <div class="flow-container">
-            <div class="drop-zone" data-step="1">المرحلة الأولى</div>
-            <div class="flow-arrow">➔</div>
-            <div class="drop-zone" data-step="2">المرحلة الثانية</div>
-            <div class="flow-arrow">➔</div>
-            <div class="drop-zone" data-step="3">المرحلة الثالثة</div>
-            <div class="flow-arrow">➔</div>
-            <div class="drop-zone" data-step="4">النتيجة النهائية</div>
+        <div class="drag-grid" id="level1Items">
+            <div class="draggable-item" onclick="selectFlow(1, 'Finished Goods')">Finished Goods (FG)</div>
+            <div class="draggable-item" onclick="selectFlow(0, 'Raw Materials')">Raw Materials (RM)</div>
+            <div class="draggable-item" onclick="selectFlow(3, 'COGS')">Cost of Goods Sold (COGS)</div>
+            <div class="draggable-item" onclick="selectFlow(2, 'Work in Process')">Work in Process (WIP)</div>
         </div>
-
-        <div class="cards-pool" id="pool-1">
-            <div class="draggable-card" draggable="true" id="cogs">تكلفة البضاعة المباعة (COGS)</div>
-            <div class="draggable-card" draggable="true" id="raw">المواد الخام (Raw Material)</div>
-            <div class="draggable-card" draggable="true" id="finished">منتجات تامة (Finished Goods)</div>
-            <div class="draggable-card" draggable="true" id="wip">إنتاج تحت التشغيل (WIP)</div>
-        </div>
-
-        <div style="margin-top: 25px; text-align: left;">
-            <button class="btn-action" onclick="checkLevel1()">التحقق من الترتيب ➔</button>
-        </div>
-        <div class="feedback-box" id="fb-1"></div>
+        <div id="flowSequence" style="margin-top: 15px; font-weight: bold; color: var(--accent);">Sequence: </div>
+        <button class="btn-action" onclick="checkLevel1()">Verify Inventory Flow ➔</button>
+        <div class="feedback-box" id="level1Feedback"></div>
     </div>
 
-    <!-- LEVEL 2: Formulas -->
-    <div class="level-section" id="level-2">
+    <!-- LEVEL 2: Formula Assembly -->
+    <div class="level-container" id="level2">
+        <button class="btn-back" onclick="goToLevel(1)">⬅ Back to Level 1</button>
         <div class="instructions">
-            🧩 <b>المستوى الثاني: المعادلات السحرية (The Formulas)</b><br>
-            اضغط على العناصر بالترتيب الصحيح لتكوين معادلتي COGM و COGS السحريتين.
+            📌 <b>Level 2: The Magic Formulas</b><br>
+            Enter the correct math signs (+ or -) to complete the accounting equations.
         </div>
-
-        <div class="formula-builder">
-            <div class="formula-row">
-                <h4>1. تكلفة البضاعة المصنعة (COGM) =</h4>
-                <div class="formula-slots" id="slots-cogm">
-                    <div class="slot" data-target="wip_start">مخزون WIP أول</div>
-                    <span class="operator">+</span>
-                    <div class="slot" data-target="mfg_cost">تكاليف التصنيع</div>
-                    <span class="operator">-</span>
-                    <div class="slot" data-target="wip_end">مخزون WIP آخر</div>
-                </div>
-            </div>
-
-            <div class="formula-row">
-                <h4>2. تكلفة البضاعة المباعة (COGS) =</h4>
-                <div class="formula-slots" id="slots-cogs">
-                    <div class="slot" data-target="fg_start">مخزون تام أول</div>
-                    <span class="operator">+</span>
-                    <div class="slot" data-target="cogm">تكلفة الإنتاج التام (COGM)</div>
-                    <span class="operator">-</span>
-                    <div class="slot" data-target="fg_end">مخزون تام آخر</div>
-                </div>
-            </div>
+        <div style="background: #0f172a; padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+            <b>COGM Formula:</b><br>
+            Beginning WIP <select id="cogmOp1"><option value="+">+</option><option value="-">-</option></select> 
+            Manufacturing Costs <select id="cogmOp2"><option value="+">+</option><option value="-">-</option></select> 
+            Ending WIP
         </div>
-
-        <div class="cards-pool" id="pool-2">
-            <div class="draggable-card" onclick="selectFormulaTerm(this, 'fg_start')">مخزون تام أول</div>
-            <div class="draggable-card" onclick="selectFormulaTerm(this, 'wip_start')">مخزون WIP أول</div>
-            <div class="draggable-card" onclick="selectFormulaTerm(this, 'fg_end')">مخزون تام آخر</div>
-            <div class="draggable-card" onclick="selectFormulaTerm(this, 'mfg_cost')">تكاليف التصنيع</div>
-            <div class="draggable-card" onclick="selectFormulaTerm(this, 'cogm')">COGM</div>
-            <div class="draggable-card" onclick="selectFormulaTerm(this, 'wip_end')">مخزون WIP آخر</div>
+        <div style="background: #0f172a; padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+            <b>COGS Formula:</b><br>
+            Beginning FG <select id="cogsOp1"><option value="+">+</option><option value="-">-</option></select> 
+            COGM <select id="cogsOp2"><option value="+">+</option><option value="-">-</option></select> 
+            Ending FG
         </div>
-
-        <div style="margin-top: 25px; text-align: left;">
-            <button class="btn-action" onclick="checkLevel2()">التحقق من المعادلات ➔</button>
-        </div>
-        <div class="feedback-box" id="fb-2"></div>
+        <button class="btn-action" onclick="checkLevel2()">Verify Formulas ➔</button>
+        <div class="feedback-box" id="level2Feedback"></div>
     </div>
 
-    <!-- LEVEL 3: Digital Challenge -->
-    <div class="level-section" id="level-3">
+    <!-- LEVEL 3: Numerical Challenge -->
+    <div class="level-container" id="level3">
+        <button class="btn-back" onclick="goToLevel(2)">⬅ Back to Level 2</button>
         <div class="instructions">
-            🧩 <b>المستوى الثالث: التحدي الرقمي</b><br>
-            <b>المعطيات:</b> تكلفة الإنتاج = 65,000 | WIP أول = 10,000 | WIP آخر = 5,000 | تام أول = 15,000 | تام آخر = 5,000
+            📌 <b>Level 3: Numerical Challenge</b><br>
+            Given: Mfg Costs = $65,000 | Beg WIP = $10,000 | End WIP = $5,000 | Beg FG = $15,000 | End FG = $5,000.
         </div>
-
-        <div class="calc-grid">
-            <div class="calc-card">
-                <h4>1. حساب COGM:</h4>
-                <p>10,000 + 65,000 - 5,000 =</p>
-                <div class="input-group">
-                    <input type="number" id="input-cogm" placeholder="أدخل COGM">
-                </div>
-            </div>
-
-            <div class="calc-card">
-                <h4>2. حساب COGS:</h4>
-                <p>15,000 + (COGM) - 5,000 =</p>
-                <div class="input-group">
-                    <input type="number" id="input-cogs" placeholder="أدخل COGS">
-                </div>
-            </div>
+        <div class="input-group">
+            <label>1. Cost of Goods Manufactured (COGM):</label>
+            <input type="number" id="inputCOGM" placeholder="Amount ($)">
         </div>
-
-        <div style="margin-top: 15px; text-align: left;">
-            <button class="btn-action" onclick="checkLevel3()">حساب واختبار النتيجة ➔</button>
+        <div class="input-group">
+            <label>2. Cost of Goods Sold (COGS):</label>
+            <input type="number" id="inputCOGS" placeholder="Amount ($)">
         </div>
-        <div class="feedback-box" id="fb-3"></div>
+        <button class="btn-action" onclick="checkLevel3()">Verify Calculations ➔</button>
+        <div class="feedback-box" id="level3Feedback"></div>
     </div>
 
     <!-- LEVEL 4: Financial Model -->
-    <div class="level-section" id="level-4">
+    <div class="level-container" id="level4">
+        <button class="btn-back" onclick="goToLevel(3)">⬅ Back to Level 3</button>
         <div class="instructions">
-            🧩 <b>المستوى الرابع: النموذج المالي السنوي (Financial Model)</b><br>
-            احسب إجمالي الربح (Gross Profit = Revenue - COGS) لعام 2016 لإكمال النموذج!
+            📌 <b>Level 4: Multi-Year Financial Model</b><br>
+            Calculate Gross Profit for each year (Revenue - COGS).
         </div>
-
         <table class="model-table">
-            <thead>
-                <tr>
-                    <th>المعيار / السنة</th>
-                    <th>2014</th>
-                    <th>2015</th>
-                    <th>2016</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>الإيرادات (Revenue)</td>
-                    <td>150,000</td>
-                    <td>175,000</td>
-                    <td>200,000</td>
-                </tr>
-                <tr>
-                    <td>تكلفة البضاعة المباعة (COGS)</td>
-                    <td>79,918</td>
-                    <td>95,000</td>
-                    <td>110,313</td>
-                </tr>
-                <tr>
-                    <td>إجمالي الربح (Gross Profit)</td>
-                    <td style="color:var(--accent-green); font-weight:bold;">70,082</td>
-                    <td style="color:var(--accent-green); font-weight:bold;">80,000</td>
-                    <td>
-                        <input type="number" id="input-gp-2016" style="width: 120px;" placeholder="؟">
-                    </td>
-                </tr>
-            </tbody>
+            <tr>
+                <th>Metric</th>
+                <th>2014</th>
+                <th>2015</th>
+                <th>2016</th>
+            </tr>
+            <tr>
+                <td>Revenue</td>
+                <td>$150,000</td>
+                <td>$175,000</td>
+                <td>$200,000</td>
+            </tr>
+            <tr>
+                <td>COGS</td>
+                <td>($79,918)</td>
+                <td>($92,500)</td>
+                <td>($110,313)</td>
+            </tr>
+            <tr>
+                <td><b>Gross Profit</b></td>
+                <td><input type="number" id="gp2014" style="width: 110px;"></td>
+                <td><input type="number" id="gp2015" style="width: 110px;"></td>
+                <td><input type="number" id="gp2016" style="width: 110px;"></td>
+            </tr>
         </table>
-
-        <div style="margin-top: 25px; text-align: left;">
-            <button class="btn-action" onclick="checkLevel4()">إنهاء اللعبة وتأكيد النموذج 🏆</button>
-        </div>
-        <div class="feedback-box" id="fb-4"></div>
+        <button class="btn-action" onclick="checkLevel4()">Complete Financial Model 🏆</button>
+        <div class="feedback-box" id="level4Feedback"></div>
     </div>
 
-    <!-- Victory Overlay -->
-    <div class="victory-overlay" id="victoryOverlay" style="display: none;">
-        <h1 style="font-size: 38px; color: var(--accent-green); margin-bottom: 10px;">🏆 مبروك! لقد فزت باللغز</h1>
-        <p style="font-size: 18px; color: var(--text-muted); max-width: 550px; line-height: 1.6;">
-            لقد أتقنت الربط بين تدفق المخزون، معادلتي COGM و COGS، والنموذج المالي لقائمة الدخل بنجاح تام!
+    <!-- Final Overlay -->
+    <div class="overlay" id="finalOverlay" style="display: none;">
+        <h1 style="font-size: 32px; color: #10b981; margin-bottom: 10px;">🎉 Victory!</h1>
+        <p style="font-size: 18px; color: #cbd5e1; max-width: 500px; line-height: 1.6;">
+            You solved the Accounting Puzzle! You mastered Inventory Flow, Cost Formulas, COGS Calculation, and Multi-Year Financial Analysis!
         </p>
-        <div style="font-size: 28px; font-weight: bold; color: var(--accent-amber); margin: 20px 0;" id="finalScoreDisplay">
-            النتيجة النهائية: 100 / 100
-        </div>
-        <button class="btn-action" onclick="location.reload()">إعادة اللعب 🔄</button>
+        <div style="font-size: 24px; font-weight: bold; color: var(--accent); margin: 20px 0;" id="finalScore">Final Score: 100 / 100</div>
+        <button class="btn-action" onclick="location.reload()">Play Again 🔄</button>
     </div>
-
 </div>
 
 <script>
     let currentScore = 0;
-    let completedLevels = new Set();
+    let selectedFlow = [];
+
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     function playSound(type) {
@@ -577,151 +369,109 @@
         } else {
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(180, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
             osc.start();
             osc.stop(audioCtx.currentTime + 0.25);
         }
     }
 
-    function addScore(pts, levelNum) {
-        if (!completedLevels.has(levelNum)) {
-            completedLevels.add(levelNum);
-            currentScore += pts;
-            document.getElementById('scoreDisplay').textContent = `النقاط: ${currentScore} / 100`;
-            document.getElementById(`tab-${levelNum}`).classList.add('completed');
+    function goToLevel(lvl) {
+        document.querySelectorAll('.level-container').forEach(el => el.classList.remove('active'));
+        document.getElementById(`level${lvl}`).classList.add('active');
+    }
+
+    function selectFlow(id, name) {
+        if (!selectedFlow.includes(name)) {
+            selectedFlow.push(name);
+            document.getElementById('flowSequence').textContent = 'Sequence: ' + selectedFlow.join(' ➔ ');
         }
     }
 
-    function switchLevel(lvl) {
-        document.querySelectorAll('.level-section').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.level-btn').forEach(el => el.classList.remove('active'));
-
-        document.getElementById(`level-${lvl}`).classList.add('active');
-        document.getElementById(`tab-${lvl}`).classList.add('active');
-    }
-
-    /* --- Level 1 Drag & Drop Logic --- */
-    const cards = document.querySelectorAll('.draggable-card');
-    const dropZones = document.querySelectorAll('.drop-zone');
-
-    cards.forEach(card => {
-        card.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text/plain', e.target.id);
-        });
-    });
-
-    dropZones.forEach(zone => {
-        zone.addEventListener('dragover', (e) => e.preventDefault());
-        zone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            const id = e.dataTransfer.getData('text/plain');
-            const card = document.getElementById(id);
-            if (card && zone.children.length === 0) {
-                zone.appendChild(card);
-            }
-        });
-    });
-
     function checkLevel1() {
-        const correctOrder = ['raw', 'wip', 'finished', 'cogs'];
-        let isCorrect = true;
-
-        dropZones.forEach((zone, index) => {
-            const child = zone.firstElementChild;
-            if (child && child.id === correctOrder[index]) {
-                zone.classList.add('correct');
-            } else {
-                zone.classList.remove('correct');
-                isCorrect = false;
-            }
-        });
-
-        const fb = document.getElementById('fb-1');
+        const correctSequence = ['Raw Materials', 'Work in Process', 'Finished Goods', 'COGS'];
+        const fb = document.getElementById('level1Feedback');
         fb.style.display = 'block';
 
-        if (isCorrect) {
+        if (JSON.stringify(selectedFlow) === JSON.stringify(correctSequence)) {
             playSound('correct');
+            currentScore += 25;
+            document.getElementById('scoreDisplay').textContent = `Score: ${currentScore} / 100`;
             fb.className = 'feedback-box correct';
-            fb.innerHTML = '✅ ألتسلسل صحيح تماماً! تم ربط حركة المخزون بنجاح.';
-            addScore(25, 1);
-            setTimeout(() => switchLevel(2), 1200);
+            fb.innerHTML = '✅ Perfect! Inventory flows: Raw Materials ➔ Work in Process ➔ Finished Goods ➔ COGS.';
+            setTimeout(() => goToLevel(2), 1200);
         } else {
             playSound('wrong');
             fb.className = 'feedback-box incorrect';
-            fb.innerHTML = '❌ الترتيب غير صحيح. تذكر: المواد الخام ➔ تحت التشغيل ➔ إنتاج تام ➔ تكلفة البضاعة المباعة.';
-        }
-    }
-
-    /* --- Level 2 Logic --- */
-    let selectedSlots = {};
-
-    function selectFormulaTerm(el, targetKey) {
-        const slot = document.querySelector(`.slot[data-target="${targetKey}"]`);
-        if (slot) {
-            slot.textContent = el.textContent;
-            slot.classList.add('correct');
-            selectedSlots[targetKey] = true;
-            el.style.opacity = '0.4';
-            el.style.pointerEvents = 'none';
+            fb.innerHTML = '❌ Incorrect order. Resetting sequence... Try again!';
+            selectedFlow = [];
+            document.getElementById('flowSequence').textContent = 'Sequence: ';
         }
     }
 
     function checkLevel2() {
-        const fb = document.getElementById('fb-2');
+        const cogm1 = document.getElementById('cogmOp1').value;
+        const cogm2 = document.getElementById('cogmOp2').value;
+        const cogs1 = document.getElementById('cogsOp1').value;
+        const cogs2 = document.getElementById('cogsOp2').value;
+        const fb = document.getElementById('level2Feedback');
         fb.style.display = 'block';
 
-        if (Object.keys(selectedSlots).length === 6) {
+        if (cogm1 === '+' && cogm2 === '-' && cogs1 === '+' && cogs2 === '-') {
             playSound('correct');
+            currentScore += 25;
+            document.getElementById('scoreDisplay').textContent = `Score: ${currentScore} / 100`;
             fb.className = 'feedback-box correct';
-            fb.innerHTML = '✅ ممتازة! لقد قمت بصياغة معادلتي COGM و COGS بنجاح.';
-            addScore(25, 2);
-            setTimeout(() => switchLevel(3), 1200);
+            fb.innerHTML = '✅ Correct! COGM = Beg WIP + Mfg Costs - End WIP | COGS = Beg FG + COGM - End FG.';
+            setTimeout(() => goToLevel(3), 1200);
         } else {
             playSound('wrong');
             fb.className = 'feedback-box incorrect';
-            fb.innerHTML = '❌ يرجى اختيار كافة مكونات المعادلتين بالشكل الصحيح!';
+            fb.innerHTML = '❌ Incorrect operators. Remember: Add Beginning inventory & costs, subtract Ending inventory.';
         }
     }
 
-    /* --- Level 3 Logic --- */
     function checkLevel3() {
-        const cogmVal = parseFloat(document.getElementById('input-cogm').value);
-        const cogsVal = parseFloat(document.getElementById('input-cogs').value);
-        const fb = document.getElementById('fb-3');
+        const cogm = parseFloat(document.getElementById('inputCOGM').value);
+        const cogs = parseFloat(document.getElementById('inputCOGS').value);
+        const fb = document.getElementById('level3Feedback');
         fb.style.display = 'block';
 
-        if (cogmVal === 70000 && cogsVal === 80000) {
+        if (cogm === 70000 && cogs === 80000) {
             playSound('correct');
+            currentScore += 25;
+            document.getElementById('scoreDisplay').textContent = `Score: ${currentScore} / 100`;
             fb.className = 'feedback-box correct';
-            fb.innerHTML = '✅ إجابات دقيقة! COGM = 70,000 و COGS = 80,000 EGP.';
-            addScore(25, 3);
-            setTimeout(() => switchLevel(4), 1200);
+            fb.innerHTML = '✅ Excellent! COGM = 10,000 + 65,000 - 5,000 = $70,000. COGS = 15,000 + 70,000 - 5,000 = $80,000.';
+            setTimeout(() => goToLevel(4), 1200);
         } else {
             playSound('wrong');
             fb.className = 'feedback-box incorrect';
-            fb.innerHTML = '❌ حاول مجدداً. حساب COGM: (10,000 + 65,000 - 5,000 = 70,000)، ثم COGS: (15,000 + 70,000 - 5,000 = 80,000).';
+            fb.innerHTML = '❌ Incorrect numbers. Check equations: COGM = 10,000+65,000-5,000. COGS = 15,000+COGM-5,000.';
         }
     }
 
-    /* --- Level 4 Logic --- */
     function checkLevel4() {
-        const gpVal = parseFloat(document.getElementById('input-gp-2016').value);
-        const fb = document.getElementById('fb-4');
+        const gp14 = parseFloat(document.getElementById('gp2014').value);
+        const gp15 = parseFloat(document.getElementById('gp2015').value);
+        const gp16 = parseFloat(document.getElementById('gp2016').value);
+        const fb = document.getElementById('level4Feedback');
         fb.style.display = 'block';
 
-        if (gpVal === 89687) {
+        if (gp14 === 70082 && gp15 === 82500 && gp16 === 89687) {
             playSound('correct');
+            currentScore += 25;
+            document.getElementById('scoreDisplay').textContent = `Score: ${currentScore} / 100`;
             fb.className = 'feedback-box correct';
-            fb.innerHTML = '✅ ممتاز! 200,000 - 110,313 = 89,687 EGP.';
-            addScore(25, 4);
+            fb.innerHTML = '✅ Outstanding! All Gross Profit calculations are accurate.';
             setTimeout(() => {
-                document.getElementById('victoryOverlay').style.display = 'flex';
-            }, 1000);
+                document.getElementById('finalOverlay').style.display = 'flex';
+                document.getElementById('finalScore').textContent = `Final Score: ${currentScore} / 100`;
+            }, 1200);
         } else {
             playSound('wrong');
             fb.className = 'feedback-box incorrect';
-            fb.innerHTML = '❌ إجابة غير صحيحة. إجمالي الربح = الإيرادات (200,000) - COGS (110,313) = 89,687.';
+            fb.innerHTML = '❌ Incorrect calculation. Gross Profit = Revenue - COGS for each column.';
         }
     }
 </script>
